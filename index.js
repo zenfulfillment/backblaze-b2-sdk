@@ -53,6 +53,7 @@ const BackblazeB2 = ({accountId, masterApplicationKey, version = 'v2'}) => {
       const hash = sha1(params.fileContent);
 
       return axios({
+        maxContentLength: 100 * 1024 * 1024, // 100 MB
         method: 'post',
         url: `${params.uploadUrl}`,
         data: params.fileContent,
