@@ -4,6 +4,7 @@ const axios = require('axios');
 const BackblazeB2 = ({accountId, masterApplicationKey, version = 'v2'}) => {
   const authApiUrl = 'https://api.backblazeb2.com/b2api/v2/b2_authorize_account';
   let authorizationToken = '';
+  let downloadUrl = '';
   let apiUrl = '';
 
   return ({
@@ -22,7 +23,23 @@ const BackblazeB2 = ({accountId, masterApplicationKey, version = 'v2'}) => {
       });
 
       authorizationToken = data.authorizationToken;
+      downloadUrl = data.downloadUrl;
       apiUrl = `${data.apiUrl}/b2api/${version}/`;
+    },
+
+    async downloadFileById({fileId}) {
+      if (!downloadUrl || !authorizationToken) {
+        await this.authorizeAccount();
+      }
+      const route = `/b2api/v2/b2_download_file_by_id?fileId=${fileId}`;
+      return axios({
+        method: 'get',
+        url: `${downloadUrl}${route}`,
+        headers: {
+          Authorization: authorizationToken
+        }
+      })
+        .then(({data}) => data);
     },
 
     async getUploadUrl({bucketId}) {
