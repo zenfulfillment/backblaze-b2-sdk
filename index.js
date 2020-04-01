@@ -27,6 +27,27 @@ const BackblazeB2 = ({accountId, masterApplicationKey, version = 'v2'}) => {
       apiUrl = `${data.apiUrl}/b2api/${version}/`;
     },
 
+    async deleteFileVersion({fileName, fileId}) {
+      if (!authorizationToken) {
+        await this.authorizeAccount();
+      }
+
+      const operation = 'b2_delete_file_version';
+
+      return axios({
+        method: 'post',
+        url: `${apiUrl}${operation}`,
+        data: {
+          fileName,
+          fileId
+        },
+        headers: {
+          Authorization: authorizationToken
+        }
+      })
+        .then(({data}) => data);
+    },
+
     async downloadFileById({fileId}) {
       if (!downloadUrl || !authorizationToken) {
         await this.authorizeAccount();
